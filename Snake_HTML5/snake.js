@@ -29,7 +29,7 @@ SnakeBlock.prototype.Draw = function()
 function Snake()
 {
 	this.dir = 0;	
-	this.move_rate = 100; //Move rate in ms
+	this.move_rate = 10; //Move rate in ms
 	this.refresh_counter = 0; //The snake only moves if refresh_counter is higher than the move rate
 	this.blocks = new Array();	
 	this.AddBlock();
@@ -37,6 +37,16 @@ function Snake()
 	this.AddBlock();
 	this.AddBlock();
 	this.AddBlock();	
+this.AddBlock();
+	this.AddBlock();
+	this.AddBlock();
+	this.AddBlock();
+	this.AddBlock();
+this.AddBlock();
+	this.AddBlock();
+	this.AddBlock();
+	this.AddBlock();
+	this.AddBlock();
 }
 
 Snake.prototype.AddBlock = function()

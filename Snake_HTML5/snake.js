@@ -6,35 +6,64 @@ function SetupCanvas() {
     context = canvas.getContext("2d");
     canvas.width = 800;
     canvas.height = 600;
+    window.addEventListener('keydown',OnKeyDown,true);
     
 };
 
 function SnakeBlock(x, y) {
 	this.x = x;
 	this.y = y;
-	this.width = 10;
-	this.height = 10;		
+	this.width = 15;
+	this.height = 15;		
 };
 
 SnakeBlock.prototype.Draw = function()
 {	
-	context.fillStyle = "#FF0000"; 
+	context.fillStyle = "#FFFFFF"; 
     context.fillRect(this.x,this.y,this.width,this.height);
-    context.strokeStyle = "#FFFFFF";
+    context.strokeStyle = "#BBBBBB";
     context.strokeRect(this.x,this.y,this.width,this.height);
         
 };
 
 function Snake()
 {
-	this.dir = 0;
-	this.speed = 10;
-	this.blocks = new Array();
-	this.blocks.push(new SnakeBlock(10,10));
-	this.blocks.push(new SnakeBlock(20,10));
-	this.blocks.push(new SnakeBlock(30,10));
-	this.blocks.push(new SnakeBlock(40,10));
-	this.blocks.push(new SnakeBlock(50,10));
+	this.dir = 0;	
+	this.move_rate = 100; //Move rate in ms
+	this.refresh_counter = 0; //The snake only moves if refresh_counter is higher than the move rate
+	this.blocks = new Array();	
+	this.AddBlock();
+	this.AddBlock();
+	this.AddBlock();
+	this.AddBlock();
+	this.AddBlock();	
+}
+
+Snake.prototype.AddBlock = function()
+{
+	if(this.blocks.length > 0){
+		var last_block = this.blocks[this.blocks.length - 1];
+		var next_x = last_block.x;
+		var next_y = last_block.y;
+		switch(this.dir){
+		case 0: //Right
+			next_x -= last_block.width;
+		break;
+		case 1: //Left		
+			next_x += last_block.width;
+		break;			
+		case 2: //Down
+			next_y -= last_block.height;
+		break;
+		case 3: //Up
+			next_y += last_block.height;
+		break;
+		};	
+		this.blocks.push(new SnakeBlock(next_x, next_y));	
+	}else{
+		this.blocks.push(new SnakeBlock(canvas.width/2, canvas.height/2));
+	}
+	
 }
 
 Snake.prototype.Draw = function()
@@ -47,36 +76,42 @@ Snake.prototype.Draw = function()
 
 Snake.prototype.Move = function()
 {
+	this.refresh_counter++;
+	if(this.refresh_counter < this.move_rate){
+		return;
+	}else{
+		this.refresh_counter = 0;
+	}	
 	var first_block = this.blocks[0];
 	var last_block = this.blocks[this.blocks.length - 1];
 	var next_x = first_block.x;
 	var next_y = first_block.y;
 	switch(this.dir){
 		case 0: //Right
-			next_x += this.speed;
+			next_x += first_block.width;
 		break;
 		case 1: //Left		
-			next_x -= this.speed;
+			next_x -= first_block.width;
 		break;			
 		case 2: //Down
-			next_y += this.speed;
+			next_y += first_block.height;
 		break;
 		case 3: //Up
-			next_y -= this.speed;
+			next_y -= first_block.height;
 		break;
 	};	
 	if(next_x > canvas.width){
 		next_x = 0;
 	}else if(next_x < 0){
-		next_x = canvas.width;
+		next_x = canvas.width - first_block.width;
 	}	
 	if(next_y > canvas.height){
 		next_y = 0;
 	}else if(next_y < 0){
-		next_y = canvas.height;
+		next_y = canvas.height - first_block.height;
 	}
 	last_block.x = next_x;
-	last_block.y = next_y;
+	last_block.y = next_y;	
 	this.blocks.pop();
 	this.blocks.unshift(last_block);
 };
@@ -101,14 +136,13 @@ Snake.prototype.ChangeDirection = function(dir)
 function main() {	
     SetupCanvas();     
     snake = new Snake();
-    setInterval(Update, 30);
+    setInterval(Update, 0);    
 };
 
 function Update() {
 	context.clearRect ( 0 , 0 , canvas.width , canvas.height );
 	context.fillStyle = "#000000";
-	context.fillRect(0,0, canvas.width, canvas.height);
-	window.addEventListener('keydown',OnKeyDown,true);
+	context.fillRect(0,0, canvas.width, canvas.height);	
 	snake.Move();
 	snake.Draw();
 };

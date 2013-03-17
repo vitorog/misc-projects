@@ -1,25 +1,33 @@
 function SnakeBlock(x, y) {
 	
-	this.width = canvas.width/BLOCKS_COUNT;
-	this.height = canvas.width/BLOCKS_COUNT;	
+	this.width = BLOCKS_WIDTH;
+	this.height = BLOCKS_HEIGHT;	
 	this.x = x;
 	this.y = y;
-	this.draw_style = "#FFFFFF";	
+	this.draw_style = "#555555";	
 };
 
 SnakeBlock.prototype.Draw = function()
 {	
 	context.fillStyle = this.draw_style;
     context.fillRect(this.x,this.y,this.width,this.height);
-    context.strokeStyle = "#BBBBBB";
-    context.strokeRect(this.x,this.y,this.width,this.height);        
+    // context.strokeStyle = "#BBBBBB";
+    // context.strokeRect(this.x,this.y,this.width,this.height);        
 };
 
-SnakeBlock.prototype.Collides = function(block)
+SnakeBlock.prototype.CollidesBlock = function(block)
 {
 	if(this.x === block.x && this.y === block.y){
 		this.draw_style = "#FF0000";
 		block.draw_style = "#FF0000";
+		return true;
+	}
+	return false;
+}
+
+SnakeBlock.prototype.CollidesXY = function(x,y)
+{
+	if(this.x === x && this.y === y){		
 		return true;
 	}
 	return false;
@@ -62,10 +70,8 @@ Snake.prototype.AddBlock = function()
 		};	
 		this.blocks.push(new SnakeBlock(next_x, next_y));	
 	}else{
-		var block_size_x = canvas.width/BLOCKS_COUNT;
-		var block_size_y = canvas.height/BLOCKS_COUNT;
-		var x = Math.floor(BLOCKS_COUNT/2) * block_size_x;
-		var y = Math.floor(BLOCKS_COUNT/2) * block_size_y;
+		var x = PLAY_AREA_X + Math.floor(BLOCKS_COUNT_X/2) * BLOCKS_WIDTH;
+		var y = PLAY_AREA_Y + Math.floor(BLOCKS_COUNT_Y/2) * BLOCKS_HEIGHT;
 		this.blocks.push(new SnakeBlock(x,y));
 	}	
 }
@@ -138,15 +144,15 @@ Snake.prototype.Move = function()
 			next_y -= first_block.height;
 		break;
 	};	
-	if(next_x >= canvas.width){
-		next_x = 0;
-	}else if(next_x < 0){
-		next_x = canvas.width - first_block.width;
+	if(next_x >= PLAY_AREA_WIDTH + PLAY_AREA_X){
+		next_x = PLAY_AREA_X;
+	}else if(next_x < PLAY_AREA_X){
+		next_x = PLAY_AREA_X + (PLAY_AREA_WIDTH - first_block.width);
 	}	
-	if(next_y >= canvas.height){
-		next_y = 0;
-	}else if(next_y < 0){
-		next_y = canvas.height - first_block.height;
+	if(next_y >= PLAY_AREA_HEIGHT + PLAY_AREA_Y){
+		next_y = PLAY_AREA_Y;
+	}else if(next_y < PLAY_AREA_Y){
+		next_y = PLAY_AREA_Y + (PLAY_AREA_HEIGHT - first_block.height);
 	}
 	last_block.x = next_x;
 	last_block.y = next_y;	
@@ -178,7 +184,7 @@ Snake.prototype.ChangeDirection = function(dir)
 Snake.prototype.CheckSelfCollision = function()
 {
 	for(var i = 1; i < this.blocks.length; i++){		
-		if(this.blocks[0].Collides(this.blocks[i])){
+		if(this.blocks[0].CollidesBlock(this.blocks[i])){
 			return true;
 		}			
 	}	
@@ -189,6 +195,16 @@ Snake.prototype.CheckFoodCollision = function(x,y)
 {
 	if(this.blocks[0].x === x && this.blocks[0].y === y){
 		return true;
+	}
+	return false;
+}
+
+Snake.prototype.CheckFullCollision = function(x,y)
+{
+	for(var i = 0; i < this.blocks.length; i++){
+		if(this.blocks[i].CollidesXY(x,y)){
+			return true;
+		}
 	}
 	return false;
 }

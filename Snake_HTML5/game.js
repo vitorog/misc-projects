@@ -2,39 +2,60 @@ var canvas;
 var context;
 var game_over = false;
 
-var BLOCKS_WIDTH = 32;
-var BLOCKS_HEIGHT = 32;
-var BLOCKS_COUNT = 25;
+var BLOCKS_WIDTH = 21;
+var BLOCKS_HEIGHT = 21;
+var BLOCKS_COUNT_X = 20;
+var BLOCKS_COUNT_Y = 11;
+var PLAY_AREA_X = 10;
+var PLAY_AREA_Y = 35;
+var PLAY_AREA_WIDTH = BLOCKS_COUNT_X * BLOCKS_WIDTH;
+var PLAY_AREA_HEIGHT = BLOCKS_COUNT_Y * BLOCKS_HEIGHT;
+var TEXT_AREA_X = 10;
+var TEXT_AREA_Y = PLAY_AREA_Y - 10;
+var SCORE = 0;
+
 
 function Food(x, y)
 {
 	this.x = x;
 	this.y = y;
-	this.width = canvas.width/BLOCKS_COUNT;
-	this.height = canvas.height/BLOCKS_COUNT;
+	this.width = BLOCKS_WIDTH;
+	this.height = BLOCKS_WIDTH;
 	this.eaten = true;
 }
 
 Food.prototype.Draw = function()
 {
-	context.fillStyle = "#0000FF";
+	context.fillStyle = "#999999";
 	context.fillRect(this.x,this.y, this.width, this.height);	
-	context.strokeStyle = "#BBBBBB";
-    context.strokeRect(this.x,this.y,this.width,this.height);        
+	// context.strokeStyle = "#BBBBBB";
+    // context.strokeRect(this.x,this.y,this.width,this.height);        
 }
 
 function SetupGame() {
 	canvas = document.getElementById("game_canvas");
     context = canvas.getContext("2d");
-    canvas.width = 800;
-    canvas.height = 800;
+    canvas.width = PLAY_AREA_WIDTH + 20;
+    canvas.height = 280;
     window.addEventListener('keydown',HandleRestart,true);   
 };
 
-function Update() {
-	context.clearRect ( 0 , 0 , canvas.width , canvas.height );
-	context.fillStyle = "#000000";
+function Update() {	
+	ClearScreen();
+	Logic();
+	Draw();	
+};
+
+function ClearScreen()
+{
+	context.clearRect (0 , 0, canvas.width , canvas.height );
+	context.fillStyle = "#bcdc94";
 	context.fillRect(0,0, canvas.width, canvas.height);	
+}
+
+
+function Logic()
+{
 	if(snake.CheckSelfCollision()){
 		game_over = true;			
 	}
@@ -47,16 +68,36 @@ function Update() {
 	if(snake.CheckFoodCollision(food.x,food.y)){
 		food.eaten = true;
 		snake.AddTailBlock();
+		SCORE += 10;
 	}
+}
+
+function Draw()
+{		
 	snake.Draw();	
 	food.Draw();
-	DrawGrid();
-};
+	DrawBorder();	
+	DrawScores();
+}
+
+function DrawScores()
+{
+	context.fillStyle = "#000000";
+	context.font = "20px Calibri";
+	context.fillText("Score: " + SCORE, TEXT_AREA_X,TEXT_AREA_Y);
+}
+
+function DrawBorder()
+{
+	context.strokeStyle = "#000000";
+	context.strokeRect(PLAY_AREA_X,PLAY_AREA_Y,PLAY_AREA_WIDTH,PLAY_AREA_HEIGHT);
+}
+
 
 function DrawGrid()
 {
-	var grid_x_size = canvas.width/BLOCKS_COUNT;
-	var grid_y_size = canvas.height/BLOCKS_COUNT;
+	var grid_x_size = BLOCKS_WIDTH;
+	var grid_y_size = BLOCKS_HEIGHT;
 	for(var i = 0; i < BLOCKS_COUNT;i++){
 		for(var j = 0; j < BLOCKS_COUNT; j++){
 			context.strokeStyle = "#FF0000";
@@ -81,28 +122,25 @@ function Restart()
 	delete snake;
 	snake = new Snake();
 	game_over = false;
+	SCORE = 0;
 	GenerateFood();
 }
 
 function GenerateFood()
 {
-	var size_tile_x = canvas.width/BLOCKS_COUNT;
-	var size_tile_y = canvas.height/BLOCKS_COUNT;
-	food.x = 0;
-	food.y = 0;
+	
 	do{
-		food.x += Math.floor((BLOCKS_COUNT * Math.random())) * size_tile_x;
-		food.y += Math.floor((BLOCKS_COUNT * Math.random())) * size_tile_y;
-	}while(snake.CheckFoodCollision(food.x,food.y));
+		food.x = PLAY_AREA_X + Math.floor((BLOCKS_COUNT_X * Math.random())) * BLOCKS_WIDTH;
+		food.y = PLAY_AREA_Y + Math.floor((BLOCKS_COUNT_Y * Math.random())) * BLOCKS_HEIGHT;
+	}while(snake.CheckFullCollision(food.x,food.y));
 	food.eaten = false;
 }
 
 function main() {	
     SetupGame();     
     snake = new Snake();
-    food = new Food(0,0);   
+    food = new Food(PLAY_AREA_X, PLAY_AREA_Y);   
     setInterval(Update, 0);    
 };
-
 
 main();

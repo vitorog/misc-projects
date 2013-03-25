@@ -150,30 +150,52 @@ int main()
 
   float positionData[] = {
     -0.8f, -0.8f, 0.0f,
+    -0.8f, 0.8f, 0.0f,
+    0.8f, 0.8f, 0.0f,
+    0.8f, 0.8f, 0.0f,
     0.8f, -0.8f, 0.0f,
-    0.0f, 0.8f, 0.0f };
+    -0.8f, -0.8f, 0.0f,
+  };
 
   float colorData[] = {
     1.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 1.0f };
+    0.0f, 0.0f, 1.0f,
+    1.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 1.0f
+  };
 
-  GLuint vbo_handles[2];
-  glGenBuffers(2, vbo_handles);
+  float texCoordsData[] = {
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f
+  };
+
+  GLuint vbo_handles[3];
+  glGenBuffers(3, vbo_handles);
   GLuint position_buffer_handle = vbo_handles[0];
   GLuint color_buffer_handle = vbo_handles[1];
+  GLuint tex_coords_buffer_handle = vbo_handles[2];
 
   glBindBuffer(GL_ARRAY_BUFFER, position_buffer_handle );
-  glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), positionData, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER,18 * sizeof(float), positionData, GL_STATIC_DRAW);
 
   glBindBuffer( GL_ARRAY_BUFFER, color_buffer_handle );
-  glBufferData(GL_ARRAY_BUFFER, 9* sizeof(float), colorData, GL_STATIC_DRAW );
+  glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), colorData, GL_STATIC_DRAW );
+
+  glBindBuffer( GL_ARRAY_BUFFER, tex_coords_buffer_handle );
+  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), texCoordsData, GL_STATIC_DRAW );
 
   glGenVertexArrays(1, &vao_handle);
   glBindVertexArray(vao_handle);
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
 
   glBindBuffer( GL_ARRAY_BUFFER, position_buffer_handle );
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL );
@@ -181,8 +203,39 @@ int main()
   glBindBuffer( GL_ARRAY_BUFFER, color_buffer_handle );
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL );
 
+  glBindBuffer( GL_ARRAY_BUFFER, tex_coords_buffer_handle );
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL );
 
   glLinkProgram( shader_program );
+
+  GLuint block_index = glGetUniformBlockIndex( shader_program, "BlobSettings" );
+  GLint block_size;
+  glGetActiveUniformBlockiv( shader_program, block_index, GL_UNIFORM_BLOCK_DATA_SIZE, &block_size );
+  GLubyte *block_buffer = new GLubyte[block_size];
+  const GLchar *names[] = { "inner_color", "outer_color", "radius_inner", "radius_outer" };
+  GLuint indices[4];
+
+  glGetUniformIndices( shader_program, 4, names, indices );
+  GLint offset[4];
+
+  glGetActiveUniformsiv( shader_program, 4, indices, GL_UNIFORM_OFFSET, offset );
+
+  GLfloat outer_color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  GLfloat inner_color[] = { 1.0f, 1.0f, 0.75f, 1.0f };
+  GLfloat inner_radius = 0.25f;
+  GLfloat outer_radius = 0.45f;
+
+  memcpy(block_buffer + offset[0], inner_color, 4 * sizeof(GLfloat));
+  memcpy(block_buffer + offset[1], outer_color, 4* sizeof(GLfloat));
+  memcpy(block_buffer + offset[2], &inner_radius, sizeof(GLfloat));
+  memcpy(block_buffer + offset[3], &outer_radius, sizeof(GLfloat));
+
+  GLuint ubo_handle;
+  glGenBuffers(1, &ubo_handle );
+  glBindBuffer( GL_UNIFORM_BUFFER, ubo_handle );
+  glBufferData( GL_UNIFORM_BUFFER, block_size, block_buffer, GL_DYNAMIC_DRAW );
+  glBindBufferBase( GL_UNIFORM_BUFFER, block_index, ubo_handle );
+
 
 
   GLint status;
@@ -229,7 +282,6 @@ int main()
       delete[] name;
     }
 
-
     glUseProgram( shader_program );
   }
 
@@ -242,14 +294,14 @@ int main()
         quit = true;
       }
     }
-    glm::mat4 rotation_matrix = glm::rotate(glm::mat4(1.0f), 45.0f, glm::vec3(0.0f,0.0f,1.0f));
+    glm::mat4 rotation_matrix = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f,0.0f,1.0f));
     GLuint location = glGetUniformLocation(shader_program, "rotation_matrix");
     if(location >= 0){
       glUniformMatrix4fv(location, 1, GL_FALSE, &rotation_matrix[0][0]);
     }
 
     glBindVertexArray(vao_handle);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
     SDL_GL_SwapBuffers();
   }
   glDeleteShader( vertex_shader );

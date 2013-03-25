@@ -9,10 +9,10 @@ function SnakeBlock(x, y) {
 
 SnakeBlock.prototype.Draw = function()
 {	
-	context.fillStyle = this.draw_style;
-    context.fillRect(this.x,this.y,this.width,this.height);
-    // context.strokeStyle = "#BBBBBB";
-    // context.strokeRect(this.x,this.y,this.width,this.height);        
+	CONTEXT.fillStyle = this.draw_style;
+    CONTEXT.fillRect(this.x,this.y,this.width,this.height);
+    // CONTEXT.strokeStyle = "#BBBBBB";
+    // CONTEXT.strokeRect(this.x,this.y,this.width,this.height);        
 };
 
 SnakeBlock.prototype.CollidesBlock = function(block)
@@ -37,7 +37,7 @@ SnakeBlock.prototype.CollidesXY = function(x,y)
 function Snake()
 {
 	this.dir = 0;	
-	this.move_rate = 10; //Move rate in ms
+	this.move_rate = 50; //Move rate in ms
 	this.refresh_counter = 0; //The snake only moves if refresh_counter is higher than the move rate
 	this.block_change_dir = false; //This variable blocks a change of direction until the snake has moved once after a change
 	this.blocks = new Array();	
@@ -120,7 +120,7 @@ Snake.prototype.Draw = function()
 
 Snake.prototype.Move = function()
 {
-	this.refresh_counter++;
+	this.refresh_counter += TIME_ELAPSED;
 	if(this.refresh_counter < this.move_rate){
 		return;
 	}else{

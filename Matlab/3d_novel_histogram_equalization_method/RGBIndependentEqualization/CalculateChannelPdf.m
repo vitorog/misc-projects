@@ -1,4 +1,5 @@
-function [p] = CalculateProbabilities(image, L)
+function pdf = CalculatePdf(image)
+L = 256;
 image_size = size(image);
 m = image_size(1,1);
 n = image_size(1,2);
@@ -8,5 +9,5 @@ for i=1:m
         pixel_count(image(i,j)+1) = pixel_count(image(i,j)+1) + 1;
     end
 end
-p = pixel_count/(m*n);
+pdf = pixel_count/(m*n);
 end

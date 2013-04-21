@@ -1,37 +1,28 @@
-function cdf = Calculate3dCdf(pdf)
-L = 256;
-cdf = zeros(L,L,L);
-cdf(1,1,1) = pdf(1,1,1);
-for i=1:L-1
-    for j=1:L-1
-        for k=1:L-1          
-          if(i==1 & j==1 & k==1)
-              cdf(i,j,k) = pdf(i,j,k);
-          else
-              if(i>1 && j>1 && k>1)
-                  cdf(i,j,k) = cdf(i,j,k) + cdf(i-1,j-1,k-1);
-              end
-              if(i>1)
-                  cdf(i,j,k) = cdf(i,j,k) + cdf(i-1,j,k);
-              end
-              if(j>1)
-                  cdf(i,j,k) = cdf(i,j,k) + cdf(i,j-1,k);
-              end
-              if(k>1)
-                  cdf(i,j,k) = cdf(i,j,k) + cdf(i,j,k-1);
-              end
-              if(i>1 && j>1)
-                  cdf(i,j,k) = cdf(i,j,k) - cdf(i-1,j-1,k);
-              end
-              if(i>1 && k>1)
-                  cdf(i,j,k) = cdf(i,j,k) - cdf(i-1,j,k-1);
-              end              
-              if(j>1 && k>1)
-                  cdf(i,j,k) = cdf(i,j,k) - cdf(i,j-1,k-1);
-              end              
-              cdf(i,j,k) = cdf(i,j,k) + pdf(i,j,k);
-          end          
-       end
+function r = Calculate3dCdf(pdf, cdf, L, ri, gi, bi)
+% if(ri == 1 && gi == 1 && bi == 1)
+%     r = pdf(1,1,1);
+%     return;
+% end
+% r = Calculate3dCdf(pdf,cdf,L, ri-1,gi-1,bi-1);
+% r = r + Calculate3dCdf(pdf,cdf,L, ri-1,gi,bi);
+% r = r + Calculate3dCdf(pdf,cdf,L, ri,gi-1,bi);
+% r = r + Calculate3dCdf(pdf,cdf,L, ri,gi,bi-1);
+% r = r - Calculate3dCdf(pdf,cdf,L, ri-1,gi-1,bi);
+% r = r - Calculate3dCdf(pdf,cdf,L, ri-1,gi,bi-1);
+% r = r - Calculate3dCdf(pdf,cdf,L, ri,gi-1,bi-1);
+% r = r + pdf(ri,gi,bi);      
+for i=1:ri
+    for j=1:gi
+        for k=1:bi
+            if(i==1 && j==1 && k==1)
+                cdf(i,j,k) = pdf(i,j,k);
+            end
+            if(k>1)
+                cdf(i,j,k) = cdf(i,j,k-1) + pdf(i,j,k);
+            else
+                if(j > 1
+            end            
+        end
     end
 end
 end

@@ -1,23 +1,25 @@
-%This function applies the 3D Histogram Equalization with 1D Uniform
-%GrayScale Histogram
-function IsoLuminanceEqualization(image_path)
-orig_img = imread(image_path);
-orig_img_size = size(orig_img);
-width = orig_img_size(1,1);
-height = orig_img_size(1,2);
+function ScaleAndShiftEqualization(image_path)
+input_img = imread(image_path);
+input_luminance_pdf = CalculateLuminancePdf(input_img,'Original Image Luminance PDF');
+CalculateLuminanceCdf(input_luminance_pdf,'Original Image Luminance CDF');
+figure('Name','Original Image','Numbertitle','off')
+imshow(input_img);
+image_size = size(input_img);
+width = image_size(1,1);
+height = image_size(1,2);
+output_img = input_img;
 L = 256;
-figure('Name', 'Original Image','NumberTitle','off');
-imshow(orig_img);
-orig_image_pdf = CalculateLuminancePdf(orig_img,'Original Image PDF');
-original_image_cdf = CalculateLuminanceCdf(orig_image_pdf, 'Original Image CDF');
-output_img = orig_img;
+d1 = 0;
+d2 = 3*L;
+m = 0.5*3*L;
+n = 2;
 for i=1:width
     for j=1:height
-        red = int32(orig_img(i,j,1));
-        green = int32(orig_img(i,j,2));
-        blue = int32(orig_img(i,j,3));
-        input_intensity = red + green + blue;        
-        output_intensity = round(3*double(L*original_image_cdf(input_intensity + 1)));     
+        red = int32(input_img(i,j,1));
+        green = int32(input_img(i,j,2));
+        blue = int32(input_img(i,j,3));
+        input_intensity = red + green + blue;                
+        output_intensity = s_transform(d1,d2,m,n,input_intensity);
         if(input_intensity~=0)                 
             alfa = double(output_intensity)/double(input_intensity);        
         else            
@@ -51,9 +53,8 @@ for i=1:width
         output_img(i,j,3) = output_blue;
     end   
 end
-figure('Name', 'Iso-Luminance Equalized Image','NumberTitle','off');
+figure('Name','Scale-and-Shifiting Equalized Image', 'Numbertitle', 'off');
 imshow(output_img);
-equalized_image_pdf = CalculateLuminancePdf(output_img, 'Iso-Luminance Equalized Image PDF');
-CalculateLuminanceCdf(equalized_image_pdf, 'Iso-Luminance Equalized Image CDF');
+output_luminance_pdf = CalculateLuminancePdf(output_img,'Scale-and-Shifiting Equalized Image Luminance PDF');
+CalculateLuminanceCdf(output_luminance_pdf,'Scale-and-Shifiting Equalized Image Luminance CDF');
 end
-

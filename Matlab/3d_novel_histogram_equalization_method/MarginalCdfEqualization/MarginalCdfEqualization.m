@@ -1,5 +1,4 @@
-function MarginalCdfEqualization()
-image_path = 'lena.tif';
+function MarginalCdfEqualization(image_path)
 input_img = imread(image_path);
 input_luminance_pdf = CalculateLuminancePdf(input_img,'Original Image Luminance PDF');
 CalculateLuminanceCdf(input_luminance_pdf,'Original Image Luminance CDF');

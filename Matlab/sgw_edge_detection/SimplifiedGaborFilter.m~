@@ -1,0 +1,16 @@
+function SimplifiedGaborFilter()
+for i=1:2
+    for j=1:4
+        switch(i)
+            case 1
+                w = 0.3*pi;
+            case 2
+                w = 0.5*pi;
+            otherwise
+                break;
+        end
+        theta = (j*pi)/4;
+        S = G
+    end
+end
+end

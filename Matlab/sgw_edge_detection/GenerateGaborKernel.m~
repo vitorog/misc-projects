@@ -1,0 +1,8 @@
+function S = GenerateGaborKernel(width,height,w,s,theta)
+S = zeros(width,height);
+for x=-2:2
+    for y=-:height
+        S(x+3,y+3) = exp(-(x^2 + y^2)/2*(s^2))*(w*(x*cos(theta) + y*sin(theta)));
+    end
+end
+end

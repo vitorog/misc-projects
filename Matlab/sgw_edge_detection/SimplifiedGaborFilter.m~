@@ -1,4 +1,8 @@
 function SimplifiedGaborFilter()
+counter = 1;
+pattern_size = 5;
+pattern_image_size = 2*round(pattern_size/2) + 1;
+sgw_patterns = zeros(pattern_image_size,pattern_image_size,2,4);
 for i=1:2
     for j=1:4
         switch(i)
@@ -9,8 +13,62 @@ for i=1:2
             otherwise
                 break;
         end
-        theta = (j*pi)/4;
-        S = G
+        theta = pi*((j-1)/4);       
+        sigma = 1/w;
+        if(sigma*w > 1)
+            fprintf('w*sigma should be <= 1\n');
+        else
+        S = GenerateGaborKernel(pattern_size,w,sigma,theta);        
+        %S = S';        
+        %set(gcf,'Visible','off');               
+        S = (S-min(S(:)))./(max(S(:))-min(S(:))); %normalizes the image, same as imagesc         
+        sgw_patterns(:,:,i,j) = S;        
+        subplot(3,3,counter); imshow(S);               
+        %colormap(gray);   
+        %imagesc(S); 
+        counter=counter+1;
+        end
+    end
+end
+%quantize masks
+% test = images(:,:,1);%imresize(images(:,:,1),[512, 512]);
+% figure('Name','test');
+% imshow(test);
+% max_mag = max(test(:));
+% n = 2;
+% quantization_levels = (2*n) + 1;
+% for k=1:quantization_levels
+%     q(k) = (max_mag/quantization_levels)*2*k;
+% end
+% tresh = multithresh(test,4);
+% tresh
+% test2 = imquantize(test,q);
+% imagesc(test2);
+I = imread('lena.tif');
+%figure();
+%imshow(I);
+image_size = size(I);
+image_width = image_size(1,1);
+image_height = image_size(1,2);
+pixel_features = zeros(1,8);
+T1 = 0.5;
+T2 = 1;
+pattern_center_x = round(pattern_size/2);
+pattern_center_y = round(pattern_size/2);
+pattern_center_x
+pattern_center_y
+for x=1:50
+    for y=1:50
+        if(x>pattern_size && y>pattern_size && x < (image_width-pattern_size) && y < (image_height-pattern_size))
+            for i=1:2
+                for j=1:4
+                    current_pattern = sgw_patterns(:,:,i,j);                   
+                    image_section = I(x-pattern_
+                    
+                    
+                end
+            end
+        end            
     end
 end
 end

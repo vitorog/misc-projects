@@ -4,7 +4,7 @@
 clear all
 close all
 total_patterns = 8;
-sgw_pattern_size = 5;
+sgw_pattern_size = 3;
 sgw_pattern_image_size = 2*round(sgw_pattern_size/2) + 1;
 sgw_patterns = zeros(sgw_pattern_image_size,sgw_pattern_image_size,2,4);
 %This generates the patterns described in the paper
@@ -15,13 +15,13 @@ for i=1:2
         switch(i)
             case 1
                 w = 0.3*pi;
+                sigma = 0.6;
             case 2
                 w = 0.5*pi;
-            otherwise
-                break;
+                sigma = 0.1;            
         end
         theta = pi*((j-1)/4);
-        sigma = 0.6;
+        
         S = GenerateGaborKernel(sgw_pattern_size,w,sigma,theta);
         sgw_patterns(:,:,i,j) = S(:,:);
         S = S';
@@ -54,7 +54,8 @@ end
 Ioriginal = imread('lena.tif');
 I = double(rgb2gray(Ioriginal));
 figure('Name','Original Image','Numbertitle','off');
-imagesc(I);colormap(gray)
+%imagesc(I);colormap(gray)
+imshow(I / max(I(:)));
 
 figure('Name','Convolved Images','Numbertitle','off')
 subplot(2,4,1), imagesc(conv2(I,sgw_patterns(:,:,1,1)));colormap(gray);

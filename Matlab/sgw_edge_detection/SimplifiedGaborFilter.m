@@ -4,7 +4,7 @@
 clear all
 close all
 total_patterns = 8;
-sgw_pattern_size = 3;
+sgw_pattern_size = 5;
 sgw_pattern_image_size = 2*round(sgw_pattern_size/2) + 1;
 sgw_patterns = zeros(sgw_pattern_image_size,sgw_pattern_image_size,2,4);
 %This generates the patterns described in the paper
@@ -29,6 +29,8 @@ for i=1:2
         counter = counter + 1;
     end
 end
+
+%return;
 %Now we have to quantize the patterns
 nl = 2;
 total_quantization_levels = (2*nl) + 1;
@@ -53,6 +55,17 @@ Ioriginal = imread('lena.tif');
 I = double(rgb2gray(Ioriginal));
 figure('Name','Original Image','Numbertitle','off');
 imagesc(I);colormap(gray)
+
+figure('Name','Convolved Images','Numbertitle','off')
+subplot(2,4,1), imagesc(conv2(I,sgw_patterns(:,:,1,1)));colormap(gray);
+subplot(2,4,2),imagesc(conv2(I,sgw_patterns(:,:,1,2)));colormap(gray);
+subplot(2,4,3),imagesc(conv2(I,sgw_patterns(:,:,1,3)));colormap(gray);
+subplot(2,4,4),imagesc(conv2(I,sgw_patterns(:,:,1,4)));colormap(gray);
+subplot(2,4,5),imagesc(conv2(I,sgw_patterns(:,:,2,1)));colormap(gray);
+subplot(2,4,6),imagesc(conv2(I,sgw_patterns(:,:,2,2)));colormap(gray);
+subplot(2,4,7),imagesc(conv2(I,sgw_patterns(:,:,2,3)));colormap(gray);
+subplot(2,4,8),imagesc(conv2(I,sgw_patterns(:,:,2,4)));colormap(gray);
+
 image_size = size(I);
 image_width = image_size(1,1);
 image_height = image_size(1,2);
@@ -126,7 +139,8 @@ for x=1:image_width
     end
 end
 
-figure,subplot(2,4,1), imagesc(phi(:,:,1,1)), colormap(gray);
+figure('Name','Kernel Responses','Numbertitle','off');
+subplot(2,4,1), imagesc(phi(:,:,1,1)), colormap(gray);
 subplot(2,4,2), imagesc(phi(:,:,1,2)), colormap(gray);
 subplot(2,4,3), imagesc(phi(:,:,1,3)), colormap(gray);
 subplot(2,4,4), imagesc(phi(:,:,1,4)), colormap(gray);
@@ -135,6 +149,7 @@ subplot(2,4,6), imagesc(phi(:,:,2,2)), colormap(gray);
 subplot(2,4,7), imagesc(phi(:,:,2,3)), colormap(gray);
 subplot(2,4,8), imagesc(phi(:,:,2,4)), colormap(gray);
 figure('Name','Output Image','Numbertitle','off');
-test = max(output_image(:));
-output_image = output_image / test;
+max_value = max(output_image(:));
+output_image = output_image / max_value;
 imshow(output_image);
+%imagesc(output_image);colormap(gray);

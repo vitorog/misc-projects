@@ -30,11 +30,10 @@ for i=1:width
         a = 1;
         b = (red_l + green_l + blue_l);
         c = (red_l*green_l + red_l*blue_l + green_l*blue_l);
-        d = (red_l*green_l*blue_l - ((L^3)*rgb_cdf));
-        p = [a b c d]; %polynomial according to the article
-        r = roots(p);
-        rr = r(imag(r)==0); %get only real roots
-        k = round(rr(1,1)); %get first root
+        d = (red_l*green_l*blue_l - ((L^3)*rgb_cdf));        
+        r = cubic(a,b,c,d);
+        k = r(imag(r)==0);
+        k = k(1,1);                      
         red_output = red + k;
         green_output = green + k;
         blue_output = blue + k;

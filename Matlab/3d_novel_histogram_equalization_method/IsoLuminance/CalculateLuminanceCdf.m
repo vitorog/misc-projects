@@ -11,5 +11,5 @@ for i=1:3*L
     end    
 end
 figure('Name', name,'NumberTitle','off');
-plot(luminance_levels,cdf);
+plot(luminance_levels/3,cdf);
 end

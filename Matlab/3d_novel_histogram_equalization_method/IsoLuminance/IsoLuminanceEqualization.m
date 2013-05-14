@@ -2,6 +2,7 @@
 %GrayScale Histogram
 function IsoLuminanceEqualization(image_path)
 orig_img = imread(image_path);
+orig_img = orig_img(:,:,1:3);
 orig_img_size = size(orig_img);
 width = orig_img_size(1,1);
 height = orig_img_size(1,2);

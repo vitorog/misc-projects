@@ -14,17 +14,14 @@ L = 256;
 % m = 0.5*3*(L-1);
 % n = 2;
 input_img_grayscale = rgb2gray(input_img);
-grayscale_pdf = CalculateChannelPdf(input_img_grayscale);
-grayscale_cdf = CalculateChannelCdf(grayscale_pdf);
-input_img_grayscale_eq = EqualizeChannelHistogram(input_img_grayscale,grayscale_cdf);
-imshow(input_img_grayscale_eq);
+input_img_grayscale_eq = histeq(input_img_grayscale);
 for i=1:width
     for j=1:height
-        red = int32(input_img(i,j,1));
-        green = int32(input_img(i,j,2));
-        blue = int32(input_img(i,j,3));
-        input_intensity = red + green + blue;         
-        output_intensity = int32(input_img_grayscale_eq(i,j)); %s_transform(d1,d2,m,n,input_intensity);    
+        red = double(input_img(i,j,1));
+        green = double(input_img(i,j,2));
+        blue = double(input_img(i,j,3));
+        input_intensity = double(red + green + blue);         
+        output_intensity = double(input_img_grayscale_eq(i,j)); %s_transform(d1,d2,m,n,input_intensity);    
         output_intensity = 3*output_intensity;  
         if(input_intensity~=0)                 
             alfa = double(output_intensity)/double(input_intensity);        
@@ -36,9 +33,9 @@ for i=1:width
             output_green = round(alfa*green);
             output_blue = round(alfa*blue);
         else          
-            y_red = (L-1) - red;          
-            y_green = (L-1) - green;         
-            y_blue = (L-1) - blue;         
+            y_red = double((L-1) - red);          
+            y_green = double(L-1) - green);         
+            y_blue = double((L-1) - blue);         
             y_input_intensity = y_red + y_green + y_blue;                     
             y_output_intensity = 3*(L-1) - (output_intensity);            
             if(y_input_intensity ~= 0)
@@ -46,7 +43,8 @@ for i=1:width
             else
                 y_alfa = 0;
             end            
-            y_output_red = round(y_alfa*y_red);                
+            y_output_red = double(y_alfa*y_red);    
+            y_output_red
             y_output_green = round(y_alfa*y_green);
             y_output_blue = round(y_alfa*y_blue);
 

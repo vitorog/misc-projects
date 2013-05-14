@@ -25,9 +25,9 @@ for i=1:width
             alfa = 0;
         end        
         if(alfa <= 1)                      
-            output_red = alfa*red;          
-            output_green = alfa*green;
-            output_blue = alfa*blue;
+            output_red = round(alfa*red);          
+            output_green = round(alfa*green);            
+            output_blue = round(alfa*blue);
         else          
             y_red = (L-1) - red;          
             y_green = (L-1) - green;         
@@ -39,9 +39,9 @@ for i=1:width
             else
                 y_alfa = 0;
             end            
-            y_output_red = y_alfa*y_red;
-            y_output_green = y_alfa*y_green;
-            y_output_blue = y_alfa*y_blue;
+            y_output_red = round(y_alfa*y_red);
+            y_output_green = round(y_alfa*y_green);
+            y_output_blue = round(y_alfa*y_blue);
 
             output_red = (L-1) - y_output_red;
             output_green = (L-1) - y_output_green;

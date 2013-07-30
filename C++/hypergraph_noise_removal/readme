@@ -1,0 +1,11 @@
+This folder contains an implementation in C++ of the paper:
+
+Root Mean Square filter for noisy images based on hyper graph model (with some modifications)
+
+
+Authors: K. Kannan, B. Rajesh Kanna, C. Aravindan
+
+Published on: 
+Image and Vision Computing 28 (2010) 1329–1338
+
+
